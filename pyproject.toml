@@ -1,6 +1,6 @@
 [project]
 name = "agent-mesh"
-version = "0.1.0"
+version = "0.2.0"
 description = "Production patterns for a multi-agent assistant: a LangGraph coordinator and Pydantic AI specialists talking over A2A, with MCP tools, typed outcomes, guardrails, tracing and an eval gate."
 readme = "README.md"
 license = "MIT"
