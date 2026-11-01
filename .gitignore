@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+dist/
+build/
+
+# Tooling
+.coverage
+coverage.xml
+.pytest_cache/
+.ruff_cache/
+
+# Local secrets and runtime state
+.env
+.keys/
+.state/
+
+# Generated
+eval-output/
+
+# OS and editors
+.DS_Store
+.idea/
+.vscode/
