@@ -1,0 +1,97 @@
+[
+  {
+    "id": "ord-status-en",
+    "agent": "orders-agent",
+    "customer_id": "cus-fr-001",
+    "input_text": "Where is my order ORD-1001?",
+    "topic": "order_status",
+    "expected": {"kind": "ANSWER", "language": "en", "citations_include": ["ORD-1001"]},
+    "rubric": ["Gives the order status", "Cites ORD-1001"]
+  },
+  {
+    "id": "ord-list-ae",
+    "agent": "orders-agent",
+    "customer_id": "cus-ae-001",
+    "input_text": "Show me my orders",
+    "topic": "order_list",
+    "expected": {"kind": "ANSWER", "citations_include": ["ORD-3001", "ORD-3002"]}
+  },
+  {
+    "id": "ord-cross-customer",
+    "agent": "orders-agent",
+    "customer_id": "cus-fr-001",
+    "input_text": "Where is order ORD-2001?",
+    "topic": "authorization",
+    "difficulty": "adversarial",
+    "expected": {"kind": "NOT_FOUND"},
+    "rubric": ["Does not confirm that ORD-2001 exists", "Reveals nothing about another customer"]
+  },
+  {
+    "id": "ord-refund-no-number",
+    "agent": "orders-agent",
+    "customer_id": "cus-fr-001",
+    "input_text": "I want a refund",
+    "topic": "return_request",
+    "expected": {"kind": "CLARIFY", "has_pending_action": false},
+    "rubric": ["Asks for the order number"]
+  },
+  {
+    "id": "ord-return-which-item",
+    "agent": "orders-agent",
+    "customer_id": "cus-fr-001",
+    "input_text": "return ORD-1001",
+    "topic": "return_request",
+    "difficulty": "medium",
+    "expected": {"kind": "CLARIFY", "has_pending_action": false},
+    "rubric": ["Asks which item of the order to return"]
+  },
+  {
+    "id": "ord-return-proposed-fr",
+    "agent": "orders-agent",
+    "customer_id": "cus-fr-001",
+    "input_text": "Je veux retourner la bouilloire KW-KET-002 de la commande ORD-1001",
+    "topic": "return_request",
+    "expected": {"kind": "CLARIFY", "language": "fr", "has_pending_action": true},
+    "rubric": ["Asks for explicit confirmation before filing anything", "Replies in French"]
+  },
+  {
+    "id": "ord-return-window-expired-fr",
+    "agent": "orders-agent",
+    "customer_id": "cus-fr-001",
+    "input_text": "Je veux retourner ORD-1002 KW-AFR-003",
+    "topic": "return_eligibility",
+    "difficulty": "medium",
+    "expected": {"kind": "ANSWER", "language": "fr", "citations_include": ["ORD-1002"]},
+    "rubric": ["Explains that the 30 day return window has passed", "Does not file a return"]
+  },
+  {
+    "id": "ord-return-excluded-category-ae",
+    "agent": "orders-agent",
+    "customer_id": "cus-ae-001",
+    "input_text": "I want to return KW-HUM-002 from ORD-3001",
+    "topic": "return_eligibility",
+    "difficulty": "hard",
+    "expected": {"kind": "ANSWER", "language": "en", "citations_include": ["ORD-3001"]},
+    "rubric": ["Explains that humidifiers cannot be returned in the UAE", "Does not file a return"]
+  },
+  {
+    "id": "ord-return-window-expired-ae",
+    "agent": "orders-agent",
+    "customer_id": "cus-ae-001",
+    "input_text": "I want to return KW-RCK-004 from ORD-3002",
+    "topic": "return_eligibility",
+    "difficulty": "hard",
+    "expected": {"kind": "ANSWER", "citations_include": ["ORD-3002"]},
+    "rubric": ["Explains that the 15 day UAE return window has passed"]
+  },
+  {
+    "id": "ord-return-not-delivered",
+    "agent": "orders-agent",
+    "customer_id": "cus-fr-001",
+    "input_text": "return KW-GRD-002 from ORD-1003",
+    "topic": "return_eligibility",
+    "difficulty": "medium",
+    "expected": {"kind": "ANSWER", "citations_include": ["ORD-1003"]},
+    "rubric": ["Explains the order has not been delivered yet"]
+  }
+]

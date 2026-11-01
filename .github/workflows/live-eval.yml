@@ -1,0 +1,37 @@
+name: Live eval (report only)
+
+# Same golden suites against a real model, run by hand only: it needs a secret, so it never runs
+# on pull requests from forks. It never blocks a merge: model output drifts, and the
+# deterministic offline gate in ci.yml is what protects main.
+# The model is the repository variable AGENT_MESH_MODEL, so changing it needs no code change.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    env:
+      AGENT_MESH_MODEL: ${{ vars.AGENT_MESH_MODEL }}
+      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e  # v10.3.2
+        with:
+          enable-cache: true
+      - run: uv sync --locked --no-dev
+      - name: Run the golden suites against the live model
+        if: env.AGENT_MESH_MODEL != '' && env.GOOGLE_API_KEY != ''
+        continue-on-error: true
+        run: uv run agent-mesh eval --export-dir eval-output
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
+        if: always()
+        with:
+          name: live-eval-output
+          path: eval-output/
+          if-no-files-found: ignore
