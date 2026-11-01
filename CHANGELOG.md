@@ -4,7 +4,9 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
-Contains breaking changes. While the project is on 0.x, `cz bump` turns them into a minor bump (0.1.0 to 0.2.0).
+## [0.2.0] - 2026-11-01
+
+Contains breaking changes. While the project is on 0.x, a breaking change is a minor bump.
 
 ### Added
 
