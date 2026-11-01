@@ -1,0 +1,87 @@
+# Local demo of the whole mesh. Only the coordinator and the Jaeger UI are published, on
+# localhost. Keys are generated once into a volume shared by the services: fine for a demo,
+# not for production (see docs/architecture.md, "Keys").
+
+x-mesh: &mesh
+  build: .
+  image: agent-mesh:local
+  restart: unless-stopped
+  env_file:
+    - path: .env
+      required: false
+  environment: &mesh-env
+    AGENT_MESH_ORDERS_API_URL: http://orders-api:8100
+    AGENT_MESH_CATALOG_AGENT_URL: http://catalog-agent:8001
+    AGENT_MESH_ORDERS_AGENT_URL: http://orders-agent:8002
+    AGENT_MESH_COORDINATOR_URL: http://coordinator:8000
+    AGENT_MESH_OTLP_ENDPOINT: http://jaeger:4318/v1/traces
+  volumes:
+    - keys:/run/agent-mesh/keys:ro
+    - state:/run/agent-mesh/state
+  depends_on: &after-keys
+    keys-init:
+      condition: service_completed_successfully
+
+x-healthcheck: &healthcheck
+  interval: 5s
+  timeout: 3s
+  retries: 20
+
+services:
+  keys-init:
+    build: .
+    image: agent-mesh:local
+    command: ["keys", "init"]
+    volumes:
+      - keys:/run/agent-mesh/keys
+    restart: "no"
+
+  orders-api:
+    <<: *mesh
+    command: ["serve", "orders-api", "--host", "0.0.0.0", "--port", "8100"]
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8100/healthz')"]
+
+  catalog-agent:
+    <<: *mesh
+    command: ["serve", "catalog-agent", "--host", "0.0.0.0", "--port", "8001"]
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/healthz')"]
+
+  orders-agent:
+    <<: *mesh
+    command: ["serve", "orders-agent", "--host", "0.0.0.0", "--port", "8002"]
+    depends_on:
+      <<: *after-keys
+      orders-api:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/healthz')"]
+
+  coordinator:
+    <<: *mesh
+    command: ["serve", "coordinator", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      <<: *after-keys
+      catalog-agent:
+        condition: service_healthy
+      orders-agent:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
+
+  jaeger:
+    image: jaegertracing/jaeger:2.22.0@sha256:836b967b5abcf1f7758066aa6b348619267a2f1459f72d472840570f9bd88a17
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:16686:16686"
+
+volumes:
+  keys:
+  state:

@@ -1,0 +1,80 @@
+{
+  "generated_at": "2026-10-24T12:11:40+00:00",
+  "command": "uv run python scripts/reproduce.py",
+  "git": {
+    "commit": "uncommitted",
+    "dirty": true
+  },
+  "python": "3.14.4",
+  "packages": {
+    "agent-mesh": "0.1.0",
+    "a2a-sdk": "1.2.3",
+    "langgraph": "1.2.16",
+    "mcp": "2.3.0",
+    "pydantic-ai-slim": "2.58.0",
+    "opentelemetry-sdk": "1.45.1"
+  },
+  "hardware": {
+    "system": "Darwin",
+    "release": "27.0.0",
+    "machine": "arm64",
+    "cpu_count": 14,
+    "cpu": "Apple M4 Pro"
+  },
+  "seed": {
+    "catalog": 20261020
+  },
+  "datasets": [
+    {
+      "path": "evals/golden/catalog-agent.json",
+      "sha256": "f6910241cef02dd40a6f3bbc589a4e8ef312021da074abd28d4bf5a275922b65",
+      "cases": 7
+    },
+    {
+      "path": "evals/golden/coordinator.json",
+      "sha256": "f86a591b89590651fe87ad6fe478541ba70acf1d3e269a240f35d234b26915bd",
+      "cases": 8
+    },
+    {
+      "path": "evals/golden/orders-agent.json",
+      "sha256": "f0c1a9d1e82bc040d0f5e1bc20e35c5d4849f97db3386ca968fcc2faada45905",
+      "cases": 10
+    },
+    {
+      "path": "src/agent_mesh/data/catalog.json",
+      "sha256": "5bf2903f1c51391e36dd394c0cfafaf5cc08314c6848e1002dde20a8a386579f",
+      "products": 60
+    }
+  ],
+  "runs": [
+    {
+      "name": "offline",
+      "model": {
+        "name": "offline",
+        "version": "sha256:279f9d2c3158c767b15fb2956bf44fcc037bc0866dc04f9370a1b4d3853ac836",
+        "source": "src/agent_mesh/llm/offline.py"
+      },
+      "metrics": [
+        {
+          "name": "golden_cases_passed",
+          "suite": "catalog-agent",
+          "value": 7,
+          "n": 7
+        },
+        {
+          "name": "golden_cases_passed",
+          "suite": "coordinator",
+          "value": 8,
+          "n": 8
+        },
+        {
+          "name": "golden_cases_passed",
+          "suite": "orders-agent",
+          "value": 10,
+          "n": 10
+        }
+      ],
+      "failed_case_ids": []
+    }
+  ]
+}
