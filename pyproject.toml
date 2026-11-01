@@ -1,0 +1,88 @@
+[project]
+name = "agent-mesh"
+version = "0.1.0"
+description = "Production patterns for a multi-agent assistant: a LangGraph coordinator and Pydantic AI specialists talking over A2A, with MCP tools, typed outcomes, guardrails, tracing and an eval gate."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+authors = [{ name = "Adel Saoud" }]
+keywords = ["agents", "a2a", "mcp", "langgraph", "pydantic-ai", "opentelemetry", "evals"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Typing :: Typed",
+]
+dependencies = [
+    "a2a-sdk[http-server,signing]>=1.2.3,<2",
+    "fastmcp-slim[client]>=4.1,<5",
+    "httpx>=0.28,<1",
+    "langgraph>=1.2.16,<2",
+    "mcp>=2.3,<3",
+    "opentelemetry-exporter-otlp-proto-http>=1.45,<2",
+    "opentelemetry-sdk>=1.45,<2",
+    "pydantic>=2.12,<3",
+    "pydantic-ai-slim[google,mcp]>=2.58,<3",
+    "pydantic-settings>=2.16,<3",
+    "pyjwt[crypto]>=2.15,<3",
+    "starlette>=1.9,<2",
+    "uvicorn>=0.54,<1",
+]
+
+[project.scripts]
+agent-mesh = "agent_mesh.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.13.5,<0.14"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "commitizen>=4.19.3,<5",
+    "pre-commit>=4.3",
+    "pyright>=1.1.414",
+    "pytest>=9,<10",
+    "pytest-asyncio>=1.2",
+    "pytest-cov>=7,<8",
+    "ruff>=0.17.2,<0.18",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "S", "PT", "ASYNC", "PL"]
+# E501: ruff format owns line length; long bilingual user-facing strings stay unwrapped.
+ignore = ["E501", "PLR0913", "PLR2004"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "PLR2004"]
+
+[tool.pyright]
+include = ["src", "tests", "scripts"]
+pythonVersion = "3.12"
+typeCheckingMode = "strict"
+venvPath = "."
+venv = ".venv"
+# Third-party stubs are partial for protobuf-generated A2A types and LangGraph internals.
+reportMissingTypeStubs = false
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+addopts = "--cov=agent_mesh --cov-report=term-missing --cov-fail-under=90"
+filterwarnings = ["error::DeprecationWarning:agent_mesh.*"]
+
+[tool.coverage.run]
+branch = true
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version_provider = "uv"
+tag_format = "v$version"
+update_changelog_on_bump = false
+major_version_zero = true
