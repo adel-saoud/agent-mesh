@@ -16,3 +16,8 @@ updates:
     directory: /
     schedule: {interval: monthly}
     groups: {images: {patterns: ["*"]}}
+    # The base image follows the Python version the project develops on (.python-version);
+    # moving to a new minor is a deliberate change, not a Dependabot bump.
+    ignore:
+      - dependency-name: python
+        versions: [">= 3.15"]
